@@ -8,22 +8,25 @@ const Todo = () => {
   const { todos } = useContext(TodoContext);
 
   return (
-    <div className='max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg'>
-      <h1 className='text-2xl font-bold mb-4'>To-Do List</h1>
-      <TodoInput />
-      {
-        todos.length === 0 ? (
-          <p className='text-gray-500'>No tasks available. Please add some tasks.</p>
-        ) : (
-          todos.map((todo) =>
-            <TodoItem
-              key={todo._id}
-              id={todo?._id}
-              title={todo?.title}
-              completed={todo?.completed} />
-          )
-        )
-      }
+    <div className='min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-100 to-blue-100 p-6'>
+      <div className='w-full max-w-md p-6 bg-white rounded-xl shadow-xl'>
+        <h1 className='text-3xl font-semibold text-center mb-6 text-blue-600'>📝 To-Do List</h1>
+        <TodoInput />
+        <div className='mt-4 max-h-80 overflow-y-auto custom-scrollbar space-y-3'>
+          {todos.length === 0 ? (
+            <p className='text-gray-500 text-center'>No tasks yet. Add your first task above!</p>
+          ) : (
+            todos.map((todo) => (
+              <TodoItem
+                key={todo._id}
+                id={todo._id}
+                title={todo.title}
+                completed={todo.completed}
+              />
+            ))
+          )}
+        </div>
+      </div>
     </div>
   )
 }

@@ -1,101 +1,118 @@
-import React, { useContext, useState } from 'react'
-import { Button } from './ui/button'
-import { Checkbox } from './ui/checkbox'
-import { Input } from './ui/input'
-import { MdEditSquare } from "react-icons/md"
-import { TbHttpDelete } from "react-icons/tb"
-import { FaCheck, FaTimes } from "react-icons/fa"
+import React, { useContext, useState } from 'react';
+import { Button } from './ui/button';
+import { Checkbox } from './ui/checkbox';
+import { Input } from './ui/input';
+import { MdEditSquare } from 'react-icons/md';
+import { TbHttpDelete } from 'react-icons/tb';
+import { FaCheck, FaTimes } from 'react-icons/fa';
+import { toast } from 'sonner';
 
-import { deleteTodo, toggleTodo, updateTodo } from '@/services/TodoAPI'
-import { TodoContext } from '@/context/TodoContext'
+import { deleteTodo, toggleTodo, updateTodo } from '@/services/TodoAPI';
+import { TodoContext } from '@/context/TodoContext';
+import { Loader } from '@/components/ui/Loader'; // ✅ import your spinner
 
 const TodoItem = ({ id, title, completed }) => {
-  const { setTodos } = useContext(TodoContext)
+  const { setTodos } = useContext(TodoContext);
 
-  const [isEditing, setIsEditing] = useState(false)
-  const [editTitle, setEditTitle] = useState(title)
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState(title);
+
+  const [toggleLoading, setToggleLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [updateLoading, setUpdateLoading] = useState(false);
 
   const handleToggle = async () => {
     try {
-      const updatedTodo = await toggleTodo(id)
-      setTodos((prev) =>
-        prev.map((todo) => todo._id === updatedTodo._id ? updatedTodo : todo)
-      )
+      setToggleLoading(true);
+      const updated = await toggleTodo(id);
+      setTodos((prev) => prev.map((t) => t._id === updated._id ? updated : t));
+      toast.success(updated.completed ? 'Marked as done' : 'Marked as active');
     } catch (error) {
-      console.error("Toggle failed", error)
+      toast.error('Toggle failed');
+    } finally {
+      setToggleLoading(false);
     }
-  }
+  };
 
   const handleDelete = async () => {
     try {
-      await deleteTodo(id)
-      setTodos((prev) => prev.filter((todo) => todo._id !== id))
+      setDeleteLoading(true);
+      await deleteTodo(id);
+      setTodos((prev) => prev.filter((t) => t._id !== id));
+      toast.success('Deleted!');
     } catch (error) {
-      console.error("Delete failed", error)
+      toast.error('Delete failed');
+    } finally {
+      setDeleteLoading(false);
     }
-  }
+  };
 
   const handleUpdate = async () => {
-    if (!editTitle.trim()) return
+    if (!editTitle.trim()) return;
     try {
-      const updatedTodo = await updateTodo(id, { title: editTitle })
-      setTodos((prev) =>
-        prev.map((todo) => todo._id === updatedTodo._id ? updatedTodo : todo)
-      )
-      setIsEditing(false)
+      setUpdateLoading(true);
+      const updated = await updateTodo(id, { title: editTitle });
+      setTodos((prev) => prev.map((t) => t._id === updated._id ? updated : t));
+      toast.success('Updated successfully!');
+      setIsEditing(false);
     } catch (error) {
-      console.error("Update failed", error)
+      toast.error('Update failed');
+    } finally {
+      setUpdateLoading(false);
     }
-  }
+  };
 
   const handleCancelEdit = () => {
-    setEditTitle(title)
-    setIsEditing(false)
-  }
+    setEditTitle(title);
+    setIsEditing(false);
+  };
 
   return (
-    <div className='flex items-center justify-between p-4 bg-gray-100 rounded-lg shadow-md mb-4'>
-      <div className='flex items-center gap-3 w-full' onDoubleClick={handleToggle}>
+    <div className='flex items-center justify-between px-4 py-3 bg-gray-50 border rounded-lg shadow-sm hover:shadow-md transition'>
+      <div className='flex items-center gap-3 w-full'>
         <Checkbox
-          className='mr-3'
+          className='mt-0.5'
           checked={completed}
+          disabled={toggleLoading}
           onCheckedChange={handleToggle}
         />
-
         {isEditing ? (
           <Input
             autoFocus
             value={editTitle}
             onChange={(e) => setEditTitle(e.target.value)}
-            className="flex-1"
+            className='flex-1'
           />
         ) : (
           <span
-            className={`text-gray-800 select-none flex-1 ${
+            className={`flex-1 text-sm sm:text-base text-gray-800 select-none truncate ${
               completed ? 'line-through text-muted-foreground' : ''
             }`}
+            title={title}
           >
             {title}
           </span>
         )}
       </div>
 
-      <div className='flex space-x-2 items-center'>
+      <div className='flex items-center space-x-2 ml-3'>
         {isEditing ? (
           <>
             <Button
-              variant="ghost"
-              size="icon"
-              className="text-green-600 hover:text-green-800"
+              variant='ghost'
+              size='icon'
+              className='text-green-600'
               onClick={handleUpdate}
+              disabled={updateLoading}
             >
-              <FaCheck />
+              {updateLoading ? <Loader /> : <FaCheck />}
             </Button>
             <Button
-              variant="ghost"
-              size="icon"
-              className="text-red-500 hover:text-red-700"
+              variant='ghost'
+              size='icon'
+              className='text-red-500'
               onClick={handleCancelEdit}
+              disabled={updateLoading}
             >
               <FaTimes />
             </Button>
@@ -103,26 +120,28 @@ const TodoItem = ({ id, title, completed }) => {
         ) : (
           <>
             <Button
-              type="button"
-              variant="ghost"
-              className='text-blue-500 hover:text-blue-700'
+              variant='ghost'
+              size='icon'
+              className='text-blue-500'
               onClick={() => setIsEditing(true)}
+              disabled={deleteLoading || toggleLoading}
             >
-              <MdEditSquare className='inline-block' />
+              <MdEditSquare />
             </Button>
             <Button
-              type="button"
-              variant="ghost"
-              className='text-red-500 hover:text-red-700'
+              variant='ghost'
+              size='icon'
+              className='text-red-500'
               onClick={handleDelete}
+              disabled={deleteLoading}
             >
-              <TbHttpDelete className='inline-block' />
+              {deleteLoading ? <Loader /> : <TbHttpDelete />}
             </Button>
           </>
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default TodoItem
+export default TodoItem;
