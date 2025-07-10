@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 
 import { deleteTodo, toggleTodo, updateTodo } from '@/services/TodoAPI';
 import { TodoContext } from '@/context/TodoContext';
-import { Loader } from '@/components/ui/Loader'; // ✅ import your spinner
+import { Loader } from '@/components/ui/Loader';
 
 const TodoItem = ({ id, title, completed }) => {
   const { setTodos } = useContext(TodoContext);
@@ -69,20 +69,20 @@ const TodoItem = ({ id, title, completed }) => {
 
   return (
     <div className='flex items-center justify-between px-4 py-3 bg-gray-50 border rounded-lg shadow-sm hover:shadow-md transition'>
-      <div className='flex items-center gap-3 w-full'>
+      <div className='flex items-center gap-3 w-full min-w-0'>
         <Checkbox
           className='mt-0.5'
           checked={completed}
           disabled={toggleLoading}
           onCheckedChange={handleToggle}
         />
+
         {isEditing ? (
           <Input
             autoFocus
             value={editTitle}
             onChange={(e) => setEditTitle(e.target.value)}
-              className="flex-1 border-none ring-0 focus:ring-0 focus:border-none focus:outline-none outline-none shadow-none custom"
-
+            className="flex-1 border-none ring-0 focus:ring-0 focus:border-none focus:outline-none outline-none shadow-none truncate"
           />
         ) : (
           <span
@@ -96,7 +96,7 @@ const TodoItem = ({ id, title, completed }) => {
         )}
       </div>
 
-      <div className='flex items-center space-x-2 ml-3'>
+      <div className='flex items-center space-x-2 ml-3 flex-shrink-0'>
         {isEditing ? (
           <>
             <Button
