@@ -81,7 +81,8 @@ const TodoItem = ({ id, title, completed }) => {
             autoFocus
             value={editTitle}
             onChange={(e) => setEditTitle(e.target.value)}
-            className='flex-1'
+              className="flex-1 border-none ring-0 focus:ring-0 focus:border-none focus:outline-none outline-none shadow-none custom"
+
           />
         ) : (
           <span

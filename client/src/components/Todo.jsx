@@ -10,7 +10,7 @@ const Todo = () => {
   return (
     <div className='min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-100 to-blue-100 p-6'>
       <div className='w-full max-w-md p-6 bg-white rounded-xl shadow-xl'>
-        <h1 className='text-3xl font-semibold text-center mb-6 text-blue-600'>📝 To-Do List</h1>
+        <h1 className='text-3xl font-semibold text-center mb-6 text-black-600'> TO-DO</h1>
         <TodoInput />
         <div className='mt-4 max-h-80 overflow-y-auto custom-scrollbar space-y-3'>
           {todos.length === 0 ? (

@@ -15,7 +15,10 @@ const TodoInput = () => {
 
     const handleCreateTodo = async (e) => {
         e.preventDefault();
-        if (!todo.trim()) return;
+        if (!todo.trim()) {
+            toast.error('Please enter a todo');
+            return;
+        };
 
         try {
             setLoading(true);
@@ -36,6 +39,7 @@ const TodoInput = () => {
     return (
         <form onSubmit={handleCreateTodo} className='flex gap-2'>
             <Input
+                autoFocus
                 placeholder="What's on your mind?"
                 className='flex-1'
                 value={todo}

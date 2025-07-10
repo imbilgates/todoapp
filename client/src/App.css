@@ -6,3 +6,8 @@
   background-color: rgba(0, 0, 0, 0.2);
   border-radius: 4px;
 }
+/* global.css or tailwind.css */
+.custom {
+  border: none !important;
+  box-shadow: none !important;
+}
