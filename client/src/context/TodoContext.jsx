@@ -5,13 +5,17 @@ export const TodoContext = createContext();
 
 export const TodoProvider = ({ children }) => {
   const [todos, setTodos] = useState([]);
+  const [loading, setLoading] = useState(true); // 👈 global loading state
 
   const fetchTodos = async () => {
     try {
+      setLoading(true);
       const response = await getTodos();
       setTodos(response);
     } catch (error) {
       console.error("Error fetching todos:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -20,8 +24,8 @@ export const TodoProvider = ({ children }) => {
   }, []);
 
   return (
-    <TodoContext.Provider value={{ todos, setTodos }}>
+    <TodoContext.Provider value={{ todos, setTodos, loading }}>
       {children}
     </TodoContext.Provider>
   );
-}
+};
